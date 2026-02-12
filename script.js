@@ -29,16 +29,20 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    // 1–6 now all trigger denial (same as access commands)
-    "1": handleAccessDenial,
-    "2": handleAccessDenial,
-    "3": handleAccessDenial,
-    "4": handleAccessDenial,
-    "5": handleAccessDenial,
-    "6": handleAccessDenial,
-    "access cameras": handleAccessDenial,
-    "access lights": handleAccessDenial,
-    "access emergency power": handleAccessDenial
+    // Menu number shortcuts
+    "1": () => handleAccessDenial("Access Security Grid"),
+    "2": () => handleAccessDenial("Access Main Program"),
+    "3": () => handleAccessDenial("View Cameras"),
+    "4": () => handleAccessDenial("Control Lights"),
+    "5": () => "Emergency Power: ACTIVE",
+    "6": () => handleAccessDenial("System Status"),
+    // Full command equivalents
+    "access cameras": () => handleAccessDenial("Cameras"),
+    "access lights": () => handleAccessDenial("Lights"),
+    "access emergency power": () => "Emergency Power: ACTIVE",
+    "access security": () => handleAccessDenial("Security"),
+    "access security grid": () => handleAccessDenial("Security Grid"),
+    "access main security grid": () => handleAccessDenial("Main Security Grid")
 };
 
 function showMenu() {
@@ -53,8 +57,9 @@ function showMenu() {
            'Type number or full command...';
 }
 
-function handleAccessDenial() {
-    addLine('<span class="denied">access: PERMISSION DENIED</span>');
+function handleAccessDenial(label = "") {
+    const msg = label ? `${label}: ACCESS DENIED` : "access: PERMISSION DENIED";
+    addLine(`<span class="denied">${msg}</span>`);
     failCount++;
 
     if (failCount >= maxFailsBeforeMagic) {
@@ -89,9 +94,9 @@ function handleCommand(cmd) {
         return;
     }
 
-    // Fallback for any other "access ..." commands not explicitly listed
+    // Catch-all for any other access command
     if (cmd.startsWith("access ")) {
-        handleAccessDenial();
+        handleAccessDenial(cmd.replace("access ", "").trim());
     } else {
         addLine("Command not recognized. Try 'm' for menu or 'help'.");
     }
@@ -99,7 +104,7 @@ function handleCommand(cmd) {
 
 function updateCursorPosition() {
     const text = visibleInput.textContent;
-    const charWidth = 10; // adjust if cursor is off (depends on font size)
+    const charWidth = 10; // tweak if cursor misalignment occurs
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
 }
@@ -148,6 +153,6 @@ input.addEventListener('keydown', (e) => {
 
 document.addEventListener('click', () => input.focus());
 
-// Initial cursor position
+// Initial setup
 updateCursorPosition();
 window.addEventListener('resize', updateCursorPosition);
