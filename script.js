@@ -9,19 +9,17 @@ const audio = document.getElementById('laughAudio');
 let failCount = 0;
 const maxFailsBeforeMagic = 3;
 
-const accessPredictions = [
-    "access security",
-    "access security grid",
-    "access main security grid"
-];
-
-const menuActionPredictions = {
-    "a": ["access security grid", "access main program"], // starts with 'a'
-    "v": ["view cameras"],
-    "c": ["control lights"],
-    "e": ["emergency power override"],
-    "s": ["system status"],
-    "h": ["help"]
+const predictions = {
+    'a': [
+        "access security",
+        "access security grid",
+        "access main security grid"
+    ],
+    'v': ["view cameras"],
+    'c': ["control lights"],
+    'e': ["emergency power override"],
+    's': ["system status"],
+    'h': ["help"]
 };
 
 const otherCommands = {
@@ -38,7 +36,7 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    // Direct number execution
+    // Numbers still work directly
     "1": () => handleAccessDenial("Access Security Grid"),
     "2": () => handleAccessDenial("Access Main Program"),
     "3": () => handleAccessDenial("View Cameras"),
@@ -46,7 +44,7 @@ const otherCommands = {
     "5": () => "Emergency Power: ACTIVE",
     "6": () => handleAccessDenial("System Status"),
     "7": () => "Help: See available commands below\n" + otherCommands["help"](),
-    // Full command mappings
+    // Full phrases
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
@@ -130,33 +128,13 @@ input.addEventListener('input', () => {
     suggestionsDiv.innerHTML = '';
     suggestionsDiv.style.display = 'none';
 
-    if (val === '') return;
+    if (val.length === 0) return;
 
     const firstChar = val[0];
 
-    // Access predictions (starts with 'a')
-    if (firstChar === 'a') {
+    if (predictions[firstChar]) {
         suggestionsDiv.style.display = 'block';
-        accessPredictions.forEach(pred => {
-            if (pred.startsWith(val)) {
-                const div = document.createElement('div');
-                div.className = 'suggestion';
-                div.textContent = pred;
-                div.onclick = () => {
-                    input.value = pred;
-                    visibleInput.textContent = pred;
-                    updateCursorPosition();
-                    suggestionsDiv.style.display = 'none';
-                    input.focus();
-                };
-                suggestionsDiv.appendChild(div);
-            }
-        });
-    }
-    // Menu action word predictions (based on first letter)
-    else if (menuActionPredictions[firstChar]) {
-        suggestionsDiv.style.display = 'block';
-        menuActionPredictions[firstChar].forEach(pred => {
+        predictions[firstChar].forEach(pred => {
             if (pred.startsWith(val)) {
                 const div = document.createElement('div');
                 div.className = 'suggestion';
