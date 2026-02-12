@@ -9,11 +9,20 @@ const audio = document.getElementById('laughAudio');
 let failCount = 0;
 const maxFailsBeforeMagic = 3;
 
-const predictions = [
+const accessPredictions = [
     "access security",
     "access security grid",
     "access main security grid"
 ];
+
+const menuActionPredictions = {
+    "a": ["access security grid", "access main program"], // starts with 'a'
+    "v": ["view cameras"],
+    "c": ["control lights"],
+    "e": ["emergency power override"],
+    "s": ["system status"],
+    "h": ["help"]
+};
 
 const otherCommands = {
     "help": () => {
@@ -29,7 +38,7 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    // Menu numbers 1–7 now act like the listed commands
+    // Direct number execution
     "1": () => handleAccessDenial("Access Security Grid"),
     "2": () => handleAccessDenial("Access Main Program"),
     "3": () => handleAccessDenial("View Cameras"),
@@ -37,13 +46,17 @@ const otherCommands = {
     "5": () => "Emergency Power: ACTIVE",
     "6": () => handleAccessDenial("System Status"),
     "7": () => "Help: See available commands below\n" + otherCommands["help"](),
-    // Full command equivalents (same behavior)
+    // Full command mappings
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
     "access security": () => handleAccessDenial("Security"),
     "access security grid": () => handleAccessDenial("Security Grid"),
-    "access main security grid": () => handleAccessDenial("Main Security Grid")
+    "access main security grid": () => handleAccessDenial("Main Security Grid"),
+    "view cameras": () => handleAccessDenial("View Cameras"),
+    "control lights": () => handleAccessDenial("Control Lights"),
+    "emergency power override": () => "Emergency Power: ACTIVE",
+    "system status": () => handleAccessDenial("System Status")
 };
 
 function showMenu() {
@@ -95,7 +108,6 @@ function handleCommand(cmd) {
         return;
     }
 
-    // Catch-all for any other access command
     if (cmd.startsWith("access ")) {
         handleAccessDenial(cmd.replace("access ", "").trim());
     } else {
@@ -105,7 +117,7 @@ function handleCommand(cmd) {
 
 function updateCursorPosition() {
     const text = visibleInput.textContent;
-    const charWidth = 10; // tweak if needed for your font size
+    const charWidth = 10;
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
 }
@@ -114,13 +126,37 @@ input.addEventListener('input', () => {
     visibleInput.textContent = input.value;
     updateCursorPosition();
 
-    const val = input.value.toLowerCase();
+    const val = input.value.trim().toLowerCase();
     suggestionsDiv.innerHTML = '';
     suggestionsDiv.style.display = 'none';
 
-    if (val.startsWith('a')) {
+    if (val === '') return;
+
+    const firstChar = val[0];
+
+    // Access predictions (starts with 'a')
+    if (firstChar === 'a') {
         suggestionsDiv.style.display = 'block';
-        predictions.forEach(pred => {
+        accessPredictions.forEach(pred => {
+            if (pred.startsWith(val)) {
+                const div = document.createElement('div');
+                div.className = 'suggestion';
+                div.textContent = pred;
+                div.onclick = () => {
+                    input.value = pred;
+                    visibleInput.textContent = pred;
+                    updateCursorPosition();
+                    suggestionsDiv.style.display = 'none';
+                    input.focus();
+                };
+                suggestionsDiv.appendChild(div);
+            }
+        });
+    }
+    // Menu action word predictions (based on first letter)
+    else if (menuActionPredictions[firstChar]) {
+        suggestionsDiv.style.display = 'block';
+        menuActionPredictions[firstChar].forEach(pred => {
             if (pred.startsWith(val)) {
                 const div = document.createElement('div');
                 div.className = 'suggestion';
