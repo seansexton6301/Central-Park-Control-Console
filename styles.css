@@ -23,6 +23,8 @@ body {
     box-shadow: 0 0 40px rgba(0,0,0,0.9);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 #top-border-title {
@@ -47,22 +49,26 @@ body {
 }
 
 .content-wrapper {
-    height: 100%;
+    flex: 1;
     padding: 25px 30px 20px;
     box-sizing: border-box;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #output {
     white-space: pre-wrap;
     word-wrap: break-word;
     margin: 0 0 10px 0;
+    flex: 1;
 }
 
 #input-line {
     display: flex;
     align-items: center;
     position: relative;
+    margin-bottom: 12px;
 }
 
 #prompt {
@@ -161,46 +167,62 @@ body {
     color: #00ffff;
 }
 
-/* ── Mobile command buttons ──────────────────────────────────────── */
+/* ── Command buttons ─────────────────────────────────────────────── */
 .command-buttons {
-    display: none;
+    display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 16px;
     justify-content: center;
+    padding: 12px 0 8px;
+    border-top: 1px solid #444;
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .command-buttons button {
-    background: #004d00;
-    color: #00ff41;
-    border: 2px solid #00ff41;
-    border-radius: 6px;
-    padding: 14px 16px;
-    font-size: 15px;
-    font-family: inherit;
+    background: #003300;
+    color: #00cc33;
+    border: 1px solid #006600;
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 14px;
     cursor: pointer;
-    touch-action: manipulation;
-    min-width: 120px;
+    transition: all 0.15s ease;
+    min-width: 110px;
     text-align: center;
 }
 
 .command-buttons button:hover,
-.command-buttons button:active {
-    background: #00ff41;
-    color: #000;
+.command-buttons button:focus {
+    background: #006600;
+    color: #ffffff;
+    border-color: #00cc33;
 }
 
-/* Show buttons on mobile & tablets */
+/* Mobile / tablet – make buttons bigger and more tappable */
 @media (max-width: 768px) {
     .command-buttons {
-        display: flex;
+        gap: 12px;
+        padding: 16px 0 20px;
+    }
+
+    .command-buttons button {
+        padding: 16px 20px;
+        font-size: 16px;
+        min-width: 48%;
+        flex: 1 1 48%;
     }
 
     #input-line {
         font-size: 16px;
+        margin-bottom: 8px;
     }
+}
 
-    #prompt, #visible-input, #cursor {
-        font-size: 16px;
+/* Very wide desktop – make buttons smaller/subtler */
+@media (min-width: 1200px) {
+    .command-buttons button {
+        padding: 8px 12px;
+        font-size: 13px;
+        min-width: 100px;
     }
 }
