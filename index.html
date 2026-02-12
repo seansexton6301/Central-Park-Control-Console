@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Park Control Console</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="terminal">
+    <div id="top-border-title">Central Park Control Console</div>
+    <div class="content-wrapper">
+        <div id="output">
+Jurassic Park, System Security Interface
+Version 4.0.5, Alpha E
+m for Menu
+Ready...
+        </div>
+
+        <div id="input-line">
+            <span id="prompt">&gt; </span>
+            <div id="input-container">
+                <span id="cursor"></span>
+                <span id="visible-input"></span>
+            </div>
+            <input type="text" id="input" autofocus autocomplete="off" spellcheck="false">
+        </div>
+
+        <div id="suggestions"></div>
+
+        <div id="nedry">
+            <p class="denied">====================================</p>
+            <p class="denied">YOU DIDN'T SAY THE MAGIC WORD!</p>
+            <img src="https://media.giphy.com/media/3ohzdQ1IynzclJldUQ/giphy.gif" 
+                 alt="Ah ah ah! You didn't say the magic word!" 
+                 title="Dennis Nedry taunts you">
+            <audio id="laughAudio" src="https://www.myinstants.com/media/sounds/magic-word-jurassic-park-15549.mp3"></audio>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
