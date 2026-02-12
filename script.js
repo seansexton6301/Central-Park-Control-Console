@@ -29,9 +29,16 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    "access cameras": () => "Cameras: ACCESS DENIED",
-    "access lights": () => "Lights: ACCESS DENIED",
-    "access emergency power": () => "Emergency Power: ACCESS DENIED"
+    // 1–6 now all trigger denial (same as access commands)
+    "1": handleAccessDenial,
+    "2": handleAccessDenial,
+    "3": handleAccessDenial,
+    "4": handleAccessDenial,
+    "5": handleAccessDenial,
+    "6": handleAccessDenial,
+    "access cameras": handleAccessDenial,
+    "access lights": handleAccessDenial,
+    "access emergency power": handleAccessDenial
 };
 
 function showMenu() {
@@ -46,6 +53,24 @@ function showMenu() {
            'Type number or full command...';
 }
 
+function handleAccessDenial() {
+    addLine('<span class="denied">access: PERMISSION DENIED</span>');
+    failCount++;
+
+    if (failCount >= maxFailsBeforeMagic) {
+        nedryDiv.style.display = 'block';
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+
+        const interval = setInterval(() => {
+            addLine('<span class="denied">access: PERMISSION DENIED ....and....YOU DIDN\'T SAY THE MAGIC WORD!</span>');
+        }, 1500);
+
+        input.disabled = true;
+        cursor.style.display = 'none';
+    }
+}
+
 function addLine(text) {
     output.innerHTML += text + '\n';
     output.scrollTop = output.scrollHeight;
@@ -57,26 +82,16 @@ function handleCommand(cmd) {
     addLine('> ' + cmd);
 
     if (otherCommands[cmd]) {
-        addLine(otherCommands[cmd]());
+        const result = otherCommands[cmd]();
+        if (typeof result === 'string') {
+            addLine(result);
+        }
         return;
     }
 
+    // Fallback for any other "access ..." commands not explicitly listed
     if (cmd.startsWith("access ")) {
-        addLine('<span class="denied">access: PERMISSION DENIED</span>');
-        failCount++;
-
-        if (failCount >= maxFailsBeforeMagic) {
-            nedryDiv.style.display = 'block';
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
-
-            const interval = setInterval(() => {
-                addLine('<span class="denied">access: PERMISSION DENIED ....and....YOU DIDN\'T SAY THE MAGIC WORD!</span>');
-            }, 1500);
-
-            input.disabled = true;
-            cursor.style.display = 'none';
-        }
+        handleAccessDenial();
     } else {
         addLine("Command not recognized. Try 'm' for menu or 'help'.");
     }
@@ -84,8 +99,7 @@ function handleCommand(cmd) {
 
 function updateCursorPosition() {
     const text = visibleInput.textContent;
-    // Approximate width per character (monospace font, adjust if needed)
-    const charWidth = 10; // pixels — tune this based on your font-size (18px Courier ≈ 9-11px per char)
+    const charWidth = 10; // adjust if cursor is off (depends on font size)
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
 }
@@ -134,8 +148,6 @@ input.addEventListener('keydown', (e) => {
 
 document.addEventListener('click', () => input.focus());
 
-// Initial position
+// Initial cursor position
 updateCursorPosition();
-
-// Optional: update cursor on window resize or font change (rare)
 window.addEventListener('resize', updateCursorPosition);
