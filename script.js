@@ -36,7 +36,6 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    // Numbers still work directly
     "1": () => handleAccessDenial("Access Security Grid"),
     "2": () => handleAccessDenial("Access Main Program"),
     "3": () => handleAccessDenial("View Cameras"),
@@ -44,7 +43,6 @@ const otherCommands = {
     "5": () => "Emergency Power: ACTIVE",
     "6": () => handleAccessDenial("System Status"),
     "7": () => "Help: See available commands below\n" + otherCommands["help"](),
-    // Full phrases
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
@@ -114,7 +112,7 @@ function handleCommand(cmd) {
 }
 
 function updateCursorPosition() {
-    const text = visibleInput.textContent;
+    const text = visibleInput.textContent || '';
     const charWidth = 10;
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
@@ -164,6 +162,20 @@ input.addEventListener('keydown', (e) => {
         updateCursorPosition();
         suggestionsDiv.style.display = 'none';
     }
+});
+
+// Mobile buttons – tap to execute command
+document.querySelectorAll('.command-buttons button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const cmd = btn.getAttribute('data-cmd');
+        if (cmd) {
+            handleCommand(cmd);
+            // Optional: clear input field after tap
+            input.value = '';
+            visibleInput.textContent = '';
+            updateCursorPosition();
+        }
+    });
 });
 
 document.addEventListener('click', () => input.focus());
