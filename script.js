@@ -29,14 +29,15 @@ const otherCommands = {
     },
     "m": showMenu,
     "menu": showMenu,
-    // Menu number shortcuts
+    // Menu numbers 1–7 now act like the listed commands
     "1": () => handleAccessDenial("Access Security Grid"),
     "2": () => handleAccessDenial("Access Main Program"),
     "3": () => handleAccessDenial("View Cameras"),
     "4": () => handleAccessDenial("Control Lights"),
     "5": () => "Emergency Power: ACTIVE",
     "6": () => handleAccessDenial("System Status"),
-    // Full command equivalents
+    "7": () => "Help: See available commands below\n" + otherCommands["help"](),
+    // Full command equivalents (same behavior)
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
@@ -104,7 +105,7 @@ function handleCommand(cmd) {
 
 function updateCursorPosition() {
     const text = visibleInput.textContent;
-    const charWidth = 10; // tweak if cursor misalignment occurs
+    const charWidth = 10; // tweak if needed for your font size
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
 }
