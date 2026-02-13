@@ -44,7 +44,7 @@ const validCommands = {
     "control lights": () => handleAccessDenial("Control Lights"),
     "emergency power override": () => "Emergency Power: ACTIVE",
     "system status": () => handleAccessDenial("System Status"),
-    // Also allow the access ... variants that were previously listed
+    // Also allow some common variants
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
@@ -75,6 +75,17 @@ function handleAccessDenial(label = "") {
         audio.currentTime = 0;
         audio.play().catch(() => {});
 
+        // Scroll to bottom after small delay so GIF is visible
+        setTimeout(() => {
+            const wrapper = document.querySelector('.content-wrapper');
+            wrapper.scrollTop = wrapper.scrollHeight;
+        }, 150);
+
+        // Optional: smoother focused scroll to Nedry
+        // setTimeout(() => {
+        //     nedryDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        // }, 200);
+
         const interval = setInterval(() => {
             addLine('<span class="denied">access: PERMISSION DENIED ....and....YOU DIDN\'T SAY THE MAGIC WORD!</span>');
         }, 1500);
@@ -86,7 +97,9 @@ function handleAccessDenial(label = "") {
 
 function addLine(text) {
     output.innerHTML += text + '\n';
-    output.scrollTop = output.scrollHeight;
+    // Always keep scrolled to bottom (good terminal behavior)
+    const wrapper = document.querySelector('.content-wrapper');
+    wrapper.scrollTop = wrapper.scrollHeight;
 }
 
 function handleCommand(cmd) {
@@ -112,7 +125,7 @@ function handleCommand(cmd) {
 
 function updateCursorPosition() {
     const text = visibleInput.textContent || '';
-    const charWidth = 10;
+    const charWidth = 10; // approximate monospaced char width in pixels
     const leftOffset = text.length * charWidth;
     cursor.style.left = leftOffset + 'px';
 }
