@@ -164,13 +164,12 @@ input.addEventListener('keydown', (e) => {
     }
 });
 
-// Mobile buttons – tap to execute command
+// Mobile buttons – only active when visible
 document.querySelectorAll('.command-buttons button').forEach(btn => {
     btn.addEventListener('click', () => {
         const cmd = btn.getAttribute('data-cmd');
         if (cmd) {
             handleCommand(cmd);
-            // Optional: clear input field after tap
             input.value = '';
             visibleInput.textContent = '';
             updateCursorPosition();
