@@ -22,49 +22,47 @@ const predictions = {
     'h': ["help"]
 };
 
-const otherCommands = {
+const validCommands = {
     "help": () => {
-        return "Available commands:\n" +
-               "  m / menu          - Show options\n" +
-               "  access security\n" +
-               "  access security grid\n" +
-               "  access main security grid\n" +
-               "  access cameras\n" +
-               "  access lights\n" +
-               "  access emergency power\n" +
-               "  help";
+        return "Available commands (full phrases only):\n" +
+               "  m / menu                          - Show menu options\n" +
+               "  access security grid              - Security Grid\n" +
+               "  access main program               - Main Program\n" +
+               "  view cameras                      - View Cameras\n" +
+               "  control lights                    - Control Lights\n" +
+               "  emergency power override          - Emergency Power Override\n" +
+               "  system status                     - System Status\n" +
+               "  help                              - This list\n" +
+               "\nType the full phrase exactly as shown.";
     },
     "m": showMenu,
     "menu": showMenu,
-    "1": () => handleAccessDenial("Access Security Grid"),
-    "2": () => handleAccessDenial("Access Main Program"),
-    "3": () => handleAccessDenial("View Cameras"),
-    "4": () => handleAccessDenial("Control Lights"),
-    "5": () => "Emergency Power: ACTIVE",
-    "6": () => handleAccessDenial("System Status"),
-    "7": () => "Help: See available commands below\n" + otherCommands["help"](),
+    // Only full phrases are valid
+    "access security grid": () => handleAccessDenial("Access Security Grid"),
+    "access main program": () => handleAccessDenial("Access Main Program"),
+    "view cameras": () => handleAccessDenial("View Cameras"),
+    "control lights": () => handleAccessDenial("Control Lights"),
+    "emergency power override": () => "Emergency Power: ACTIVE",
+    "system status": () => handleAccessDenial("System Status"),
+    // Also allow the access ... variants that were previously listed
     "access cameras": () => handleAccessDenial("Cameras"),
     "access lights": () => handleAccessDenial("Lights"),
     "access emergency power": () => "Emergency Power: ACTIVE",
     "access security": () => handleAccessDenial("Security"),
     "access security grid": () => handleAccessDenial("Security Grid"),
-    "access main security grid": () => handleAccessDenial("Main Security Grid"),
-    "view cameras": () => handleAccessDenial("View Cameras"),
-    "control lights": () => handleAccessDenial("Control Lights"),
-    "emergency power override": () => "Emergency Power: ACTIVE",
-    "system status": () => handleAccessDenial("System Status")
+    "access main security grid": () => handleAccessDenial("Main Security Grid")
 };
 
 function showMenu() {
-    return '<span class="menu">MENU OPTIONS:</span>\n' +
-           '  1. Access Security Grid\n' +
-           '  2. Access Main Program\n' +
-           '  3. View Cameras\n' +
-           '  4. Control Lights\n' +
-           '  5. Emergency Power Override\n' +
-           '  6. System Status\n' +
-           '  7. Help\n' +
-           'Type number or full command...';
+    return '<span class="menu">MENU OPTIONS (type full command):</span>\n' +
+           '  Access Security Grid     → access security grid\n' +
+           '  Access Main Program      → access main program\n' +
+           '  View Cameras             → view cameras\n' +
+           '  Control Lights           → control lights\n' +
+           '  Emergency Power Override → emergency power override\n' +
+           '  System Status            → system status\n' +
+           '  Help                     → help\n' +
+           '\nNumbers are not accepted. Type the full phrase.';
 }
 
 function handleAccessDenial(label = "") {
@@ -96,18 +94,19 @@ function handleCommand(cmd) {
 
     addLine('> ' + cmd);
 
-    if (otherCommands[cmd]) {
-        const result = otherCommands[cmd]();
+    if (validCommands[cmd]) {
+        const result = validCommands[cmd]();
         if (typeof result === 'string') {
             addLine(result);
         }
         return;
     }
 
+    // Catch other access attempts
     if (cmd.startsWith("access ")) {
         handleAccessDenial(cmd.replace("access ", "").trim());
     } else {
-        addLine("Command not recognized. Try 'm' for menu or 'help'.");
+        addLine("Command not recognized. Type 'm' for menu or 'help' for commands.");
     }
 }
 
@@ -162,19 +161,6 @@ input.addEventListener('keydown', (e) => {
         updateCursorPosition();
         suggestionsDiv.style.display = 'none';
     }
-});
-
-// Mobile buttons – only active when visible
-document.querySelectorAll('.command-buttons button').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const cmd = btn.getAttribute('data-cmd');
-        if (cmd) {
-            handleCommand(cmd);
-            input.value = '';
-            visibleInput.textContent = '';
-            updateCursorPosition();
-        }
-    });
 });
 
 document.addEventListener('click', () => input.focus());
